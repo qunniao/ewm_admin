@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html class="x-admin-sm">
+    
+    <head>
+        <meta charset="UTF-8">
+        <title>添加公司介绍</title>
+        <meta name="renderer" content="webkit">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi" />
+        <link rel="stylesheet" href="./css/font.css">
+        <link rel="stylesheet" href="./css/xadmin.css">
+        <script type="text/javascript" src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+        <script type="text/javascript" src="./lib/layui/layui.js" charset="utf-8"></script>
+        <script type="text/javascript" src="./js/xadmin.js"></script>
+        <script type="text/javascript" src="./js/allajax.js"></script>
+        <style>
+            .csbox>input[name="casenum"]{
+               width: 600px;
+            }
+            .layui-upload-list>img{
+                width: 100px;
+                height: 100px;
+            }
+            .layui-form-label{
+                width:60px;
+                text-align: left;
+            }
+            .csbox{
+                margin-top: 10px;
+                overflow: hidden;
+            }
+            .csbox>label{
+                line-height: 30px;
+                float: left;
+            }
+            .csboxtwo>input{
+                float: left;
+                margin-right: 20px;
+                width: 200px;
+            }
+            .layui-input-block{
+                margin-top: 10px;
+                margin-left: 0px;
+            }
+
+            .maxinput{
+                width: 600px;
+            }
+            .csbox>img{
+                width: 100px;
+                height: 100px;
+            }
+            .csboxtwo>input.maxinput{
+                width: 600px;
+            }
+            .csboxtwo{
+                overflow: hidden;
+                margin-bottom: 10px;
+            }
+        </style>
+        <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+        <!--[if lt IE 9]>
+            <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+            <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]--></head>
+    
+    <body>
+        <div class="layui-fluid">
+            <div class="layui-row">
+                <form class="layui-form">
+                    公司信息
+                    <div class="layui-form-item">
+                        <label for="username" class="layui-form-label">
+                            <span class="x-red">*</span>公司名称</label>
+                        <div class="layui-input-inline">
+                            <input type="text" id="name" name="name" required="" lay-verify="required" autocomplete="off" class="layui-input maxinput"></div>
+                    </div>                 
+                    <div class="layui-form-item">
+                        <label for="phone" class="layui-form-label">
+                            <span class="x-red">*</span>邮箱</label>
+                        <div class="layui-input-inline">
+                            <input type="text" id="email" name="email" required=""  autocomplete="off" class="layui-input maxinput""></div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label for="phone" class="layui-form-label">
+                            <span class="x-red">*</span>公司地址</label>
+                        <div class="layui-input-inline">
+                            <input type="text" id="address" name="address" required=""  autocomplete="off" class="layui-input maxinput""></div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label for="phone" class="layui-form-label">
+                            <span class="x-red">*</span>联系电话</label>
+                        <div class="layui-input-inline">
+                            <input type="text" id="phone" name="phone" required=""  autocomplete="off" class="layui-input maxinput""></div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label for="phone" class="layui-form-label">
+                            <span class="x-red">*</span>微信号</label>
+                        <div class="layui-input-inline">
+                            <input type="text" id="wxNumber" name="wxNumber" required=""  autocomplete="off" class="layui-input maxinput""></div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label for="phone" class="layui-form-label">
+                            <span class="x-red">*</span>qq号</label>
+                        <div class="layui-input-inline">
+                            <input type="text" id="qqNumber" name="qqNumber" required=""  autocomplete="off" class="layui-input maxinput""></div>
+                    </div>
+                    <div class="layui-form-item layui-form-text">
+                        <div>主营业务</div>
+                        <button type="button" style="margin-top: 10px;" class="layui-btn" onclick="addcompanyattr()">添加主营业务</button> 
+                        <div class="layui-input-block" id="caseattrbox">
+                        </div>
+                    </div>
+                    <div class="layui-upload">
+                        <div>办公环境</div>
+                            <blockquote class="layui-elem-quote layui-quote-nm" style="margin-top: 10px;overflow: hidden;">
+                                <button type="button" class="layui-btn" id="test3">上传办公环境图片</button> 
+                                <div class="layui-upload-list" id="demo3"></div>
+                            </blockquote>
+                    </div>
+                    <div class="layui-form-item">
+                            <div>公司介绍</div>
+                            <textarea name="layeditDemo" id="layeditDemo"></textarea>
+                    </div>
+                    <div id="savebtn" class="layui-form-item">
+                        <label for="L_repass" class="layui-form-label"></label>
+                        <button class="layui-btn" lay-filter="add" lay-submit="">保存</button></div>
+                    </form>
+                    </div>
+                    </div>
+        <script type="text/javascript" src="./js/company-add.js">
+        </script>
+    </body>
+
+</html>

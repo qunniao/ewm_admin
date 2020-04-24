@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html class="x-admin-sm">
+    
+    <head>
+        <meta charset="UTF-8">
+        <title>用户详情</title>
+        <meta name="renderer" content="webkit">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi" />
+        <link rel="stylesheet" href="./css/font.css">
+        <link rel="stylesheet" href="./css/xadmin.css">
+        <script type="text/javascript" src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+        <script type="text/javascript" src="./lib/layui/layui.js" charset="utf-8"></script>
+        <script type="text/javascript" src="./js/xadmin.js"></script>
+        <script type="text/javascript" src="./js/allajax.js"></script>
+        <style>
+            .layui-upload-list>img{
+                width: 100px;
+                height: 100px;
+            }
+            .layui-form-label{
+                width:auto;
+                text-align: left;
+            }
+            .indexcss{
+                margin-left: 10px;
+                color: blue;
+            }
+            .usertext>div{
+                width: 400px;
+            }
+            .layui-tab-title .layui-this {
+                background: beige;
+                color: #000;
+            }
+            .productimgbox{
+                overflow: hidden;
+            }
+        </style>
+        <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+        <!--[if lt IE 9]>
+            <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+            <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]--></head>
+    
+    <body>
+        <div class="layui-fluid">
+            <div class="layui-row">
+                <form class="layui-form">
+                    <div class="layui-form-item">
+                        <label  for="productCover" class="layui-form-label" >
+                            <img id="productCover" style="width: 100px;height:100px">
+                        </label>
+                        <div  class="layui-input-inline">
+                            <label  class="layui-form-label">
+                                <div>名称：<span id="productName"></span></div>
+                                <div>价格：<span id="price"></span>元</div>
+                                <div>库存：<span id="storetext"></span>件</div>
+                                <div>状态：<span id="status"></span></div>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="layui-tab" lay-filter="demo">
+                            <ul class="layui-tab-title">
+                              <li class="layui-this">产品信息</li>
+                              <li>产品批次</li>
+                              <li>工艺流程</li>
+                            </ul>
+                            <div class="layui-tab-content">
+                              <div class="layui-tab-item layui-show layui-form-item">
+                                        <div class="layui-input-inline">
+                                            <label  class="layui-form-label usertext">
+                                                <div>浏览量：<span id="count"></span></div>
+                                                <div>生产日期：<span id="gmtCreate"></span></div>
+                                                <div style="margin-bottom: 6px">产品描述：</div>
+                                                <div id="productIntro"></div>
+                                                <div style="margin-bottom: 20px">轮播图：</div>
+                                                <div class="productimgbox" id="productimg"></div>
+                                                <div>创建时间：<span id="gmtCreatetwo"></span></div>
+                                            </label>
+                                    </div>
+                              </div>
+                              <div class="layui-tab-item">
+                                    <div class="layui-btn" onclick="addpc()">添加批次</div>
+                                    <div class="layui-btn layui-btn-danger" id="del">
+                                            <i class="layui-icon"></i>批量删除</div>
+                                    <table id="demo1" class="layui-table layui-form">
+
+                                    </table>
+                                </div>
+                                <div class="layui-tab-item">
+                                    <div class="layui-btn" onclick="addgy()">添加工艺流程</div>
+                                    <div class="layui-btn layui-btn-danger" id="deltwo">
+                                            <i class="layui-icon"></i>批量删除</div>
+                                    <table id="demo2" class="layui-table layui-form">
+
+                                    </table>
+                                </div>
+                            </div>
+                          </div>           
+                </form>
+            </div>
+        </div>
+        <script type="text/html" id="timeone">
+          {{# if(d.gid!=""){
+            if(d.gmt_modified!=''){
+              return timeStamp2String(d.gmt_modified,7)
+            }
+          }}
+          {{# } }}
+      </script>
+      <script type="text/html" id="timetwo">
+        {{# if(d.gid!=""){
+          if(d.gmtCreate!=''){
+            return timeStamp2String(d.gmtCreate,7)
+          }
+        }}
+        {{# } }}
+      </script>
+      <script type="text/html" id="coverone">
+        {{# if(d.gid!=""){
+          if(d.cover!=''){
+            return '<img src="'+d.qrCode+'">'
+          }
+        }}
+        {{# } }}
+    </script>
+    <script type="text/html" id="covertwo">
+        {{# if(d.gid!=""){
+          if(d.cover!=''){
+            return '<img src="'+d.cover+'">'
+          }
+        }}
+        {{# } }}
+    </script>
+    <script type="text/html" id="isdeleter">
+        {{# if(d.gid!=""){
+          if(d.status==0){
+            return '生产中'
+          }else if(d.status==1){
+            return '出售中'
+          }else{
+            return '已下架'
+          }
+        }}
+        {{# } }}
+    </script>
+    <script type="text/html" id="barDemo">
+        <a class="layui-btn layui-btn-primary layui-btn-xs" onclick="xadmin.open('查看详情','./batch-add.html?batchid={{d.id}}&showtype=2&shopid=0',900,600)" lay-event="detail">查看</a>
+        <a class="layui-btn layui-btn-primary layui-btn-xs" onclick="xadmin.open('修改详情','./batch-add.html?batchid={{d.id}}&showtype=1&shopid=0',900,600)" lay-event="detail">修改</a>
+        <a class="layui-btn layui-btn-primary layui-btn-xs" onclick="xadmin.open('生产流程','./tp-list.html?tpid={{d.id}}&shopid={{d.pid}}',900,600)" lay-event="detail">生产流程</a>
+    </script>
+    <script type="text/html" id="barDemotwo">
+        <a class="layui-btn layui-btn-primary layui-btn-xs" onclick="xadmin.open('修改详情','./technology-add.html?batchid={{d.id}}&showtype=1&shopid=0',900,600)" lay-event="detail">修改</a>
+    </script>
+        <script>
+             let usrl =  decodeURI(location.search); //获取url中"?"符后的字串
+            let shopid= usrl.split('&')[0].split('=')[1]
+            function addpc(){
+                xadmin.open('添加批次','./batch-add.html?batchid=0&showtype=1&shopid='+shopid,600,400)
+            }
+            function addgy(){
+                xadmin.open('添加工艺流程','./technology-add.html?batchid=0&showtype=1&shopid='+shopid,600,400)
+            }
+            _ajax({
+                url : "/products/info/"+shopid,  // url---->地址
+                type : "GET",   // type ---> 请求方式
+                async : true,   // async----> 同步：false，异步：true 
+                data : {        //传入信息
+                },
+                success : function(data){
+                    // $('#nickname').html(data.data.nickname) 
+                    let productdatas = JSON.parse(data);
+                    if(productdatas.code==200){
+                        let productdetail =productdatas.data
+                        console.log(productdetail)
+                        let status ='已下架'
+                        if(productdetail.status==0){
+                            status ='生产中'
+                        }else if(status.status==1){
+                            status='出售中'
+                        }
+                        $('#status').html(status)
+                        $('#productName').html(productdetail.productName)
+                        $('#price').html(productdetail.price)
+                        $('#storetext').html(productdetail.store)
+                        $('#productIntro').html(productdetail.productIntro)
+                        $('#count').html(productdetail.count)
+                        $('#gmtCreatetwo').html(timeStamp2String(productdetail.gmtCreate,7))
+                        $('#gmtCreate').html(timeStamp2String(productdetail.gmtCreate,7))
+                        let shoppic =[]
+                        if(productdetail.url!=undefined&&productdetail.url!=null){
+                            shoppic=productdetail.url.split(',')
+                        }
+                        for(let i=0;i<shoppic.length;i++){
+                            if(i==0){
+                                $('#productCover').attr('src',shoppic[i]);
+                            }
+                            let div =' <div style="float:left;width: 100px;height:120px;margin-right:10px"><img name="shoppics" style="width: 100px;height:100px;" src="'+shoppic[i]+'"></div>'
+                            $('#productimg').append(div)
+                        }
+                    }
+                }
+            })
+            // 选项卡
+            layui.use('element', function(){
+                var $ = layui.jquery
+                ,element = layui.element; //Tab的切换功能，切换事件监听等，需要依赖element模块
+                
+                //触发事件
+                var active = {
+                    tabAdd: function(){
+                    //新增一个Tab项
+                    element.tabAdd('demo', {
+                        title: '新选项'+ (Math.random()*1000|0) //用于演示
+                        ,content: '内容'+ (Math.random()*1000|0)
+                        ,id: new Date().getTime() //实际使用一般是规定好的id，这里以时间戳模拟下
+                    })
+                    }
+                    ,tabDelete: function(othis){
+                    //删除指定Tab项
+                    element.tabDelete('demo', '44'); //删除：“商品管理”
+                    
+                    
+                    othis.addClass('layui-btn-disabled');
+                    }
+                    ,tabChange: function(){
+                        console.log(123)
+                    //切换到指定Tab项
+                    element.tabChange('demo', '22'); //切换到：用户管理
+                    }
+                };
+                
+                $('.site-demo-active').on('click', function(){
+                    var othis = $(this), type = othis.data('type');
+                    active[type] ? active[type].call(this, othis) : '';
+                });
+                
+                //Hash地址的定位
+                var layid = location.hash.replace(/^#test=/, '');
+                element.tabChange('test', layid);
+                
+                element.on('tab(demo)', function(data){
+                    if(data.index==1){
+                        layui.use(['table'], function(){
+                                var table = layui.table //表格
+                                table.render({
+                                elem: '#demo1'
+                                ,height: 1200
+                                ,url: Url+'/productBatch/list' //数据接口
+                                ,request: {
+                                    pageName: 'current' //页码的参数名称，默认：page
+                                    ,limitName: 'size' //每页数据量的参数名，默认：limit
+                                },parseData: function(res){ //res 即为原始返回的数据
+                                    return {
+                                        "code": res.code, //解析接口状态
+                                        "msg": res.descripition, //解析提示文本
+                                        "count": res.data.total, //解析数据长度
+                                        "data": res.data.records //解析数据列表
+                                    };
+                                },where:{
+                                    id:shopid
+                                }
+                                ,response: {
+                                    statusName: 'code' //数据状态的字段名称，默认：code
+                                    ,statusCode: 200 //成功的状态码，默认：0
+                                    ,msgName: 'msg' //状态信息的字段名称，默认：msg
+                                    ,countName: 'count' //数据总数的字段名称，默认：count
+                                    ,dataName: 'data' //数据列表的字段名称，默认：data
+                                }
+                                ,title: '用户表'
+                                ,page: true //开启分页
+                                ,toolbar: 'false' //开启工具栏，此处显示默认图标，可以自定义模板，详见文档
+                                ,totalRow: false //开启合计行
+                                ,cols: [[ //表头
+                                    {type: 'checkbox', fixed: 'left',toolbar: '#checkbox'},
+                                    {field: 'id', title: '批号', width:80, fixed: 'left'}
+                                    ,{field: 'name', title: '批次名称', width:160}
+                                    ,{field: 'qrCode', title: '批次二维码', width: 110,toolbar: '#coverone'}
+                                    ,{field: 'watchTimes', title: '浏览次数', width:150}
+                                    ,{field: 'status', title: '批次状态', width: 150,toolbar: '#isdeleter'}
+                                    ,{field: 'gmtCreate', title: '创建时间', width: 150,toolbar: '#timetwo'}
+                                    ,{field: 'phone', title: '操作', width: 250,toolbar:'#barDemo'}
+                                ]]
+                                
+                            });
+                            $('#del').on('click', function  (argument) {
+                                var ids = [];
+                                let checkdata=layui.table.checkStatus('demo1').data
+                                for(let i=0;i<checkdata.length;i++){
+                                    ids.push(checkdata[i].id)
+                                }
+                        
+                                layer.confirm('确认要删除吗？'+ids.toString(),function(index){
+                                    _ajax({
+                                                url : "/productBatch/delete",  // url---->地址
+                                                type : "DELETE",   // type ---> 请求方式
+                                                async : true,   // async----> 同步：false，异步：true 
+                                                data : {        //传入信息
+                                                ids :ids,
+                                                },
+                                                success : function(data){  
+                                                console.log(data)
+                                                let datas =JSON.parse(data);
+                                                    if(datas.code==200){
+                                                    layer.msg('删除成功', {icon: 1});
+                                                    pageNum=1
+                                                    table.reload('demo1', {
+                                                        where: {
+                                                        }
+                                                        ,page: {
+                                                        curr:pageNum
+                                                        }
+                                                    });
+                                                    }
+                                        }
+                                    })
+                                });
+                            })
+                        })
+                    }else if(data.index==2){
+                        layui.use(['table'], function(){
+                                var table = layui.table //表格
+                                table.render({
+                                elem: '#demo2'
+                                ,height: 1200
+                                ,url: Url+'/productProcess/list' //数据接口
+                                ,request: {
+                                    pageName: 'current' //页码的参数名称，默认：page
+                                    ,limitName: 'size' //每页数据量的参数名，默认：limit
+                                },parseData: function(res){ //res 即为原始返回的数据
+                                    return {
+                                        "code": res.code, //解析接口状态
+                                        "msg": res.descripition, //解析提示文本
+                                        "count": res.data.total, //解析数据长度
+                                        "data": res.data.records //解析数据列表
+                                    };
+                                },where:{
+                                    pid:shopid
+                                }
+                                ,response: {
+                                    statusName: 'code' //数据状态的字段名称，默认：code
+                                    ,statusCode: 200 //成功的状态码，默认：0
+                                    ,msgName: 'msg' //状态信息的字段名称，默认：msg
+                                    ,countName: 'count' //数据总数的字段名称，默认：count
+                                    ,dataName: 'data' //数据列表的字段名称，默认：data
+                                }
+                                ,title: '用户表'
+                                ,page: true //开启分页
+                                ,toolbar: 'false' //开启工具栏，此处显示默认图标，可以自定义模板，详见文档
+                                ,totalRow: false //开启合计行
+                                ,cols: [[ //表头
+                                    {type: 'checkbox', fixed: 'left',toolbar: '#checkbox'},
+                                    {field: 'id', title: 'id', width:80, fixed: 'left'}
+                                    ,{field: 'name', title: '工艺名称', width:160}
+                                    ,{field: 'content', title: '工艺内容', width: 90}
+                                    ,{field: 'cover', title: '工艺图片', width:150,toolbar: '#covertwo'}
+                                    ,{field: 'equipmentName', title: '操作设备', width: 150}
+                                    ,{field: 'sort', title: '排序', width: 150}
+                                    ,{field: 'phone', title: '操作', width: 150,toolbar:'#barDemotwo'}
+                                ]]
+                            });
+                            $('#deltwo').on('click', function  (argument) {
+                                var ids = [];
+                                let checkdata=layui.table.checkStatus('demo2').data
+                                for(let i=0;i<checkdata.length;i++){
+                                    ids.push(checkdata[i].id)
+                                }
+                        
+                                layer.confirm('确认要删除吗？'+ids.toString(),function(index){
+                                    _ajax({
+                                                url : "/productProcess/delete",  // url---->地址
+                                                type : "DELETE",   // type ---> 请求方式
+                                                async : true,   // async----> 同步：false，异步：true 
+                                                data : {        //传入信息
+                                                ids :ids,
+                                                },
+                                                success : function(data){  
+                                                console.log(data)
+                                                let datas =JSON.parse(data);
+                                                    if(datas.code==200){
+                                                    layer.msg('删除成功', {icon: 1});
+                                                    pageNum=1
+                                                    table.reload('demo2', {
+                                                        where: {
+                                                        }
+                                                        ,page: {
+                                                        curr:pageNum
+                                                        }
+                                                    });
+                                                    }
+                                        }
+                                    })
+                                });
+                            })   
+                        })
+                    }
+                });
+                
+                }); 
+        </script>
+        <script>var _hmt = _hmt || []; (function() {
+                var hm = document.createElement("script");
+                hm.src = "https://hm.baidu.com/hm.js?b393d153aeb26b46e9431fabaf0f6190";
+                var s = document.getElementsByTagName("script")[0];
+                s.parentNode.insertBefore(hm, s);
+            })();</script>
+    </body>
+
+</html>

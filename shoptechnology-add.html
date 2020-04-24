@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html class="x-admin-sm">
+    
+    <head>
+        <meta charset="UTF-8">
+        <title>添加产品流程</title>
+        <meta name="renderer" content="webkit">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi" />
+        <link rel="stylesheet" href="./css/font.css">
+        <link rel="stylesheet" href="./css/xadmin.css">
+        <script type="text/javascript" src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+        <script type="text/javascript" src="./lib/layui/layui.js" charset="utf-8"></script>
+        <script type="text/javascript" src="./js/xadmin.js"></script>
+        <script type="text/javascript" src="./js/allajax.js"></script>
+        <style>
+           
+        </style>
+        <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+        <!--[if lt IE 9]>
+            <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+            <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]--></head>
+    
+    <body>
+        <div class="layui-fluid">
+            <div class="layui-row">
+                <form class="layui-form">
+                    <div class="layui-form-item">
+                        <label  class="layui-form-label">
+                            <span class="x-red">*</span>选择工艺：</label>
+                        <div class="layui-input-inline">
+                            <select name="processId"  id="processId">
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label for="username" class="layui-form-label">
+                            <span class="x-red">*</span>备注：</label>
+                        <div class="layui-input-inline">
+                            <input type="text" id="note" name="note" required="" lay-verify="required" autocomplete="off" class="layui-input"></div>              
+                    </div>
+                    <div class="layui-inline">
+                            <label class="layui-form-label">操作时间：</label>
+                            <div class="layui-input-inline">
+                              <input type="text" class="layui-input" name="operatingTime" id="operatingTime" placeholder="yyyy年MM月dd日">
+                            </div>
+                          </div>
+                    <div class="layui-form-item" id="savebtn" >
+                        <label for="L_repass" class="layui-form-label"></label>
+                        <button class="layui-btn" lay-filter="add" lay-submit="">保存</button></div>
+                    </form>
+                    </div>
+                    </div>
+        <script>
+            let usrl =  decodeURI(location.search); //获取url中"?"符后的字串
+            let batchid= usrl.split('&')[0].split('=')[1]
+            let funtype= usrl.split('&')[1].split('=')[1]
+            let funtypeid= usrl.split('&')[2].split('=')[1]
+            let fatherid =''
+            layui.use('laydate', function(){
+                var laydate = layui.laydate;
+                laydate.render({
+                    elem: '#operatingTime'
+                    ,type: 'datetime'
+                });
+            })
+            function getproductprocess(){
+                _ajax({
+                    url : "/productProcess/list",  // url---->地址
+                    type : "GET",   // type ---> 请求方式
+                    async : true,   // async----> 同步：false，异步：true 
+                    data : {        //传入信息
+                        current :1,
+                        size:100,
+                        pid:funtypeid
+                    },
+                    success : function(data){   //返回接受信息
+                        let datas =JSON.parse(data);
+                        if(datas.code==200){
+                            let shopprolist ='<option value="0">无</option>'
+                            for(let i=0;i<datas.data.records.length;i++){
+                                let optiondiv = '<option value="'+datas.data.records[i].id+'">'+datas.data.records[i].name+'</option>'
+                                shopprolist+=optiondiv
+                            }
+                            $('#processId').append(shopprolist)
+                            renderForm()
+                        }
+                    }
+                })
+            }
+            if(batchid!=0){
+                _ajax({
+                        url : "/productBatchProcess/info/"+batchid,  // url---->地址
+                        type : "GET",   // type ---> 请求方式
+                        async : true,   // async----> 同步：false，异步：true 
+                        data :{},
+                        success : function(data){   //返回接受信息
+                            console.log(data)
+                            let datas =JSON.parse(data)
+                            if(datas.code==200){
+                                $('#note').val(datas.data.note)
+                                $('#operatingTime').val(datas.data.operatingTime)
+                                let proid =datas.data.processId
+                                _ajax({
+                                    url : "/productProcess/list",  // url---->地址
+                                    type : "GET",   // type ---> 请求方式
+                                    async : true,   // async----> 同步：false，异步：true 
+                                    data : {        //传入信息
+                                        current :1,
+                                        size:100,
+                                        pid:funtypeid
+                                    },
+                                    success : function(data){   //返回接受信息
+                                        let datas =JSON.parse(data);
+                                        if(datas.code==200){
+                                            let shopprolist ='<option value="0">无</option>'
+                                            for(let i=0;i<datas.data.records.length;i++){
+                                                let optiondiv = '<option value="'+datas.data.records[i].id+'">'+datas.data.records[i].name+'</option>'
+                                                shopprolist+=optiondiv
+                                            }
+                                            $('#processId').append(shopprolist)
+                                            if(proid==''){
+                                                proid=0
+                                            }
+                                            $('#processId').val(proid)
+                                            renderForm()
+                                        }
+                                    }
+                                })
+                            }
+                        }
+                    })  
+            }else{
+                getproductprocess()
+            }
+            
+        layui.use(['form', 'layer'],
+            function() {
+                $ = layui.jquery;
+                var form = layui.form,
+                layer = layui.layer;
+
+                form.on('select(changepro)', function(data){
+                    getprotwo(data.value)
+
+                })
+                //监听提交
+                form.on('submit(add)',
+                function(datas) {
+                    let pushproid = datas.field.processId
+                    if(pushproid==0){
+                        pushproid=''
+                    }
+                    let pushdata={
+                        processId:pushproid,
+                        note:datas.field.note,
+                        operatingTime:datas.field.operatingTime,
+                    }
+                    if(batchid==0){
+                        pushdata.pid=funtype
+                        $.ajax({ 
+                            url:Url+'/productBatchProcess/save', 
+                            type:'POST', 
+                            headers:{"Content-Type":"application/json",'token':localStorage.getItem('token')},
+                            dataType:'JSON', 
+                            data : JSON.stringify(pushdata),
+                            success:function(data){
+                                if(data.code==200){
+                                    layer.msg('添加成功', {icon: 1},function(){
+                                        closeiframe()
+                                    });
+                                }else if(data.code==4000||data.code==4001||data.code==4002){
+                                    layer.msg('登陆已过期', {icon: 5})
+                                    localStorage.removeItem('token')
+                                    top.location.href='login.html'
+                                }else{
+                                    layer.msg('添加失败', {icon: 5})
+                                }
+                                return false
+                            } 
+                        }) 
+                    }else{
+                        pushdata.id=batchid
+                        $.ajax({
+                            url:Url+"productBatchProcess/update",
+                            type:"PUT",
+                            data:JSON.stringify(pushdata),
+                            dataType:"json",
+                            contentType:"application/json",
+                            success:function(data){
+                                console.log(data)
+                                if(data.code==200){
+                                    layer.msg('修改成功', {icon: 1},function(){
+                                            closeiframe()
+                                    });
+                                }else if(data.code==4000||data.code==4001||data.code==4002){
+                                    layer.msg('登陆已过期', {icon: 5})
+                                    localStorage.removeItem('token')
+                                    top.location.href='login.html'
+                                }else{
+                                    layer.msg('修改失败', {icon: 5})
+                                }
+                                
+                            }
+                        }); 
+                    } 
+                    return false;
+                });
+
+            });</script>
+        <script>var _hmt = _hmt || []; (function() {
+                var hm = document.createElement("script");
+                hm.src = "https://hm.baidu.com/hm.js?b393d153aeb26b46e9431fabaf0f6190";
+                var s = document.getElementsByTagName("script")[0];
+                s.parentNode.insertBefore(hm, s);
+            })();</script>
+    </body>
+
+</html>
